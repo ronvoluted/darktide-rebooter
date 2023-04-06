@@ -8,10 +8,9 @@
 
 To pause this, click the icon to bring up a context menu and hit "Toggle monitoring" to deactivate/activate it. Hit "Exit" to... okay you know how to read.
 
-> **Note for Game Pass players**
+> **Note**
 >
-> You will need to save DarktideRebooter.exe to your game's installation path. By default this is `C:\XboxGames\Warhammer 40,000- Darktide\Content`. You can then create a shortcut to this file to save you from needing to always open it from this directory.
-> 
+> Game Pass players will need to save DarktideRebooter.exe to their game's installation path. By default this is `C:\XboxGames\Warhammer 40,000- Darktide\Content`. You can then create a shortcut to this file to save you from needing to always open it from this directory.
 
 ## Complimentary mods
 This pairs very nicely with [Log Me In](https://www.nexusmods.com/warhammer40kdarktide/mods/15) by raindish. Combined, it means you'll be taken back to the hub without all the clicks/presses of launching the game launcher, clicking PLAY in launcher, holding Space in the intro, hitting Space to sign-in and clicking Ready or Reconnect to join.
