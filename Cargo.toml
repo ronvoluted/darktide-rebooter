@@ -7,6 +7,7 @@ build = "build.rs"
 [dependencies]
 chrono = "0.4.24"
 open = "4.0.1"
+steamlocate = "1.2.0"
 systray = "0.4.0"
 walkdir = "2.3.3"
 winapi = { version = "0.3.9", features = ["winbase", "winuser"] }

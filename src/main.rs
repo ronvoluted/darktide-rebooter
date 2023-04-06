@@ -4,7 +4,7 @@ use chrono::Utc;
 use std::env;
 use std::fs;
 use std::os::windows::process::CommandExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::process::{Command, Output, Stdio};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
@@ -14,6 +14,8 @@ use walkdir::WalkDir;
 use winapi::um::winbase::CREATE_NO_WINDOW;
 
 extern crate open;
+extern crate steamlocate;
+use steamlocate::SteamDir;
 
 const ACTIVE_ICON: &str = "rebooter";
 const INACTIVE_ICON: &str = "rebooter-inactive";
@@ -119,6 +121,22 @@ fn check_logs_and_run_executable() -> io::Result<()> {
     Ok(())
 }
 
+fn get_tasklist_output() -> io::Result<Output> {
+    Command::new("tasklist")
+        .arg("/FI")
+        .arg("IMAGENAME eq Darktide.exe")
+        .stdout(Stdio::piped())
+        .creation_flags(CREATE_NO_WINDOW)
+        .output()
+}
+
+fn is_darktide_running() -> io::Result<bool> {
+    let output = get_tasklist_output()?;
+    let task_list = String::from_utf8_lossy(&output.stdout);
+
+    Ok(task_list.contains("Darktide.exe"))
+}
+
 fn wait_until_darktide_not_running() -> io::Result<()> {
     loop {
         if !is_darktide_running()? {
@@ -131,25 +149,18 @@ fn wait_until_darktide_not_running() -> io::Result<()> {
     Ok(())
 }
 
-fn is_darktide_running() -> io::Result<bool> {
-    let output = get_tasklist_output()?;
-    let task_list = String::from_utf8_lossy(&output.stdout);
-
-    Ok(task_list.contains("Darktide.exe"))
-}
-
-fn get_tasklist_output() -> io::Result<Output> {
-    Command::new("tasklist")
-        .arg("/FI")
-        .arg("IMAGENAME eq Darktide.exe")
-        .stdout(Stdio::piped())
-        .creation_flags(CREATE_NO_WINDOW)
-        .output()
-}
-
 fn run_darktide_executable() -> io::Result<()> {
-    let working_directory = env::current_dir()?;
-    let executable_path = working_directory.join("binaries\\Darktide.exe");
+    let mut steam_app = SteamDir::locate().unwrap();
+    let game_directory = match steam_app.app(&1361210) {
+        Some(app) => app.path.clone(),
+        _ => env::current_dir().unwrap_or_else(|_| PathBuf::new()),
+    };
+
+    let executable_path = game_directory.join("binaries\\Darktide.exe");
+
+    if !Path::new(&executable_path).exists() {
+        panic!("Installation path could not be automatically detected.\n\nTry placing DarktideRebooter.exe in your \"Warhammer 40,000 DARKTIDE\" directory.");
+    }
 
     let mut command = Command::new(&executable_path);
     command
